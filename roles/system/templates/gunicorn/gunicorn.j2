@@ -1,0 +1,9 @@
+[Unit]
+Description={{ project_slug }} gunicorn service
+After=network.service
+
+[Service]
+Type=Simple
+User={{ username }}
+ExecStart={{ backend_dir }}/venv/bin/gunicorn -c {{ backend_dir }}/gunicorn_cfg.py config.wsgi:application
+ExecStop=/usr/bin/pgrep gunicorn -a | grep gunicorn_cfg.py | awk '{print $1}' | xargs kill -9

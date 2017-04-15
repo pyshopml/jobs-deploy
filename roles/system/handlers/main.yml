@@ -1,0 +1,10 @@
+---
+
+- name: restart site
+  supervisorctl: name={{ project_slug }}-gunicorn state=restarted
+
+- name: restart postgresql
+  service: name=postgresql state=restarted enabled=yes
+
+- name: restart nginx
+  service: name=nginx state=restarted enabled=yes

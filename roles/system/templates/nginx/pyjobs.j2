@@ -1,0 +1,87 @@
+upstream pyjobs {
+    server localhost:8082 fail_timeout=0;
+     #server unix:/var/run/gunicorn/pyjobs.sock  fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name  www.{{ project_url }};
+    rewrite ^/(.*) http://{{ project_url }}/$1 permanent;
+}
+
+server {
+    listen 80;
+    client_max_body_size 4G;
+    server_name {{ project_url }};
+    access_log  {{ project_dir }}/logs/{{ project_slug }}.access.log;
+    error_log {{ project_dir }}/logs/{{ project_slug }}.error.log;
+    keepalive_timeout 5;
+
+    root {{ frontend_dir }}/dist/;
+    #root /home/pyjobs/pyjobs_project/pyclone/dist/;
+
+    location / {
+        index index.html;
+        root {{ frontend_dir }}/dist/;
+        #root /home/pyjobs/pyjobs_project/pyclone/dist/;
+#       location / {
+#               try_files $uri @proxy_to_jobs;
+#       }
+
+        location /api {
+                try_files $uri @proxy_to_jobs;
+         }
+
+        location /static/ {
+                root {{ backend_dir }}/staticfiles;
+        }
+    }
+
+
+location @proxy_to_jobs {
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      # enable this if and only if you use HTTPS
+      # proxy_set_header X-Forwarded-Proto https;
+      proxy_set_header Host $http_host;
+      # we don't want nginx trying to do something clever with
+      # redirects, we set the Host: header above already.
+      proxy_pass http://pyjobs;
+      proxy_redirect http://pyjobs /;
+    }
+
+    error_page 500 502 503 504 /500.html;
+    location = /500.html {
+        root /home/myuser/web/myproject/static_content/static/html;
+    }
+
+    #    location ~ ^/(static|media)/ {
+    #       root /home/pyjobs/pyjobs_project/jobs-backend/staticfiles;
+    #        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #        proxy_set_header Host $http_host;
+    #        proxy_redirect off;
+    #        if (!-f $request_filename) {
+    #            proxy_pass http://pyjobs;
+    #            break;
+    #        }
+    #     }
+    }
+
+
+# redmine
+upstream projects.pyshop.ru {
+        server localhost:8081;
+}
+
+server {
+        server_name projects.pyshop.ru;
+        root /home/redmine/soft/redmine-latest/public;
+
+        location / {
+                try_files $uri @redmine;
+        }
+
+        location @redmine {
+                proxy_set_header  X-Forwarded-For $remote_addr;
+                proxy_pass http://projects.pyshop.ru;
+        }
+}

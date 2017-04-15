@@ -1,0 +1,89 @@
+---
+- name: updating the system
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: install packages
+  apt: pkg="{{ item.name }}" state=present
+  with_items:
+    - name: python3-pip
+    - name: python3-dev
+    - name: supervisor
+    - name: nginx
+    - name: postgresql-{{ pg_version }}
+    - name: postgresql-contrib
+    - name: npm
+    - name: git
+    - name: libpq-dev
+    - name: python-psycopg2
+    - name: language-pack-ru-base
+
+- name: reconfigure locales
+  shell: dpkg-reconfigure language-pack-ru-base
+
+- name: install virtualenv
+  pip:
+    executable: pip3
+    name: virtualenv
+
+- name: create linux user
+  user: name={{ username }} shell=/bin/bash home={{ user_homedir }} password={{ user_crypt_password }}
+
+- name: chown homedir
+  file:
+    path: "{{ user_homedir }}"
+    owner: "{{ username }}"
+
+- name: copy supervisor config
+  template: src=supervisor/{{ project_slug }}.j2 dest=/etc/supervisor/conf.d/{{ project_slug }}.conf
+  notify:
+    - restart site
+
+- name: copy nginx config
+  template: src=nginx/{{ project_slug }}.j2 dest=/etc/nginx/sites-available/{{ project_slug }}.conf
+  notify:
+    - restart nginx
+    
+- name: create symlink nginx config
+  file: src=/etc/nginx/sites-available/{{ project_slug }}.conf dest=/etc/nginx/sites-enabled/{{ project_slug }}.conf state=link
+
+# - name: Setup postgres cluster to default to utf8 | stop cluster
+#   # if the dbs haven't been created yet, we want to destroy the whole db
+#   # cluster and recreate it with proper utf8 support.
+#   shell: pg_dropcluster --stop {{ pg_version }} {{ pg_cluster }}
+#   tags:
+#     - postgres
+
+# - name: Setup postgres cluster to default to utf8 | start cluster
+#   # if the dbs haven't been created yet, we want to destroy the whole db
+#   # cluster and recreate it with proper utf8 support. From http://ph.ly/pg
+#   # become: yes
+#   # become_user: postgres
+#   shell: pg_createcluster --start -e {{ pg_encoding }} {{ pg_version }} {{ pg_cluster }}
+#   tags:
+#     - postgres
+
+- name: Create Postgresql database
+  become: yes
+  become_user: postgres
+  postgresql_db: >
+    name={{ postgresql_database }}
+    lc_collate=en_US.UTF-8
+    lc_ctype=en_US.UTF-8
+    encoding=UTF-8
+    state=present
+  notify:
+    - restart postgresql
+
+- name: Create Postgresql user
+  become: yes
+  become_user: postgres
+  postgresql_user: >
+    db={{ postgresql_database }}
+    name={{ postgresql_user }}
+    password={{ postgresql_user_password }}
+    priv=ALL
+    state=present
+  notify:
+    - restart postgresql
+
+# create database

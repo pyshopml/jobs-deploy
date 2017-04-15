@@ -1,0 +1,12 @@
+[program:redmine_web]
+command=bundle exec unicorn_rails -E production -c config/unicorn.rb --listen localhost:8081
+directory=/home/redmine/soft/redmine-latest/
+umask=022
+autostart=true
+autorestart=true
+startsecs=10
+startretries=3
+exitcodes=0,2
+stopsignal=TERM
+stopwaitsecs=10
+user=redmine

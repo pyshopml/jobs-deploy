@@ -1,0 +1,12 @@
+[program:{{ project_slug }}-gunicorn]
+command={{ backend_dir }}/venv/bin/python3 {{ backend_dir }}/venv/bin/gunicorn config.wsgi:application --bind=localhost:8082 --workers=2
+directory={{ backend_dir }}
+umask=022
+autostart=true
+autorestart=true
+startsecs=10
+startretries=3
+exitcodes=0,2
+stopsignal=TERM
+stopwaitsecs=10
+user={{ username }}

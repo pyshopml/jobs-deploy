@@ -1,0 +1,23 @@
+---
+- hosts: production
+  vars_files:
+    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/project-hosts
+  become: true
+  become_user: "{{ username }}"
+  roles:
+    - django
+
+- hosts: production
+  become: true
+  vars_files:
+    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/project-hosts
+
+  tasks:
+    - name: restart site in supervisor
+      supervisorctl: name={{ project_slug }}-gunicorn state=restarted
+
+    - name: restart postgresql
+      service: name=postgresql state=restarted enabled=yes
+
+    - name: restart nginx
+      service: name=nginx state=restarted enabled=yes
