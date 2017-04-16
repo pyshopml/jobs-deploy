@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Django deploying scripts
 ========================
 
@@ -116,3 +117,6 @@ Its all!
 go to you `project_url` and smile :]
 
 If domain not ready - add record about domain to your `/etc/hosts` file
+=======
+# jobs-deploy
+>>>>>>> c796eedef666e24c30dec1aecc5b46f720f22470

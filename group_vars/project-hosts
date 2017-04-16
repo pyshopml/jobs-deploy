@@ -10,7 +10,7 @@ username: pyjobs
 # http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
 # or run `mkpasswd --method=SHA-512`
 # here crypted
-
+user_crypt_password:
 # really password
 user_password: z
 
@@ -49,13 +49,10 @@ postgresql_database: jobs-backend
 postgresql_user: pyjobs
 
 # postgresql user password for current project
-
+postgresql_user_password:
 #
 # django settings
 #
-
-debug: False
-local_settings: 'local_settings.py'
 
 # set empty string if not used
 requirements: '{{ backend_dir }}/requirements/production.txt'
