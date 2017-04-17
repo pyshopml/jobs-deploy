@@ -1,0 +1,16 @@
+---
+- name: git pull
+  git:
+    repo: 'https://github.com/pyshopml/jobs-frontend.git'
+    dest: "{{ frontend_dir }}"
+    version: master
+#
+# - name: npm install
+#   npm:
+#     path: "{{ frontend_dir }}"
+#     production: yes
+
+- name:
+  shell: npm install && npm run build:prod
+  args:
+    chdir: "{{ frontend_dir }}"

@@ -1,11 +1,12 @@
 ---
 - hosts: production
   vars_files:
-    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/project-hosts
+    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/project-hosts_passed
   become: true
   become_user: "{{ username }}"
   roles:
     - django
+    - frontend
 
 - hosts: production
   become: true

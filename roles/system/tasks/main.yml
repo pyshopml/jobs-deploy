@@ -1,9 +1,13 @@
 ---
+
 - name: updating the system
   apt: update_cache=yes cache_valid_time=86400
 
+# - name: install nodejs 7* repo
+#   shell: curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+
 - name: install packages
-  apt: pkg="{{ item.name }}" state=present
+  apt: pkg="{{ item.name }}" state=present force=yes
   with_items:
     - name: python3-pip
     - name: python3-dev
@@ -16,6 +20,9 @@
     - name: libpq-dev
     - name: python-psycopg2
     - name: language-pack-ru-base
+    # - name: nodejs
+    - name: build-essential
+    - name: nodejs-legacy
 
 - name: reconfigure locales
   shell: dpkg-reconfigure language-pack-ru-base
@@ -36,15 +43,25 @@
 - name: copy supervisor config
   template: src=supervisor/{{ project_slug }}.j2 dest=/etc/supervisor/conf.d/{{ project_slug }}.conf
   notify:
-    - restart site
+    - restart supervisor
+
+- name: delete default nginx config
+  file: path=/etc/nginx/sites-available/default state=absent
+
+- file: path=/etc/nginx/sites-enabled/default state=absent
+
+- name: create logs directory
+  become: true
+  become_user: "{{ username }}"
+  file: path={{ project_dir }}/logs state=directory
 
 - name: copy nginx config
   template: src=nginx/{{ project_slug }}.j2 dest=/etc/nginx/sites-available/{{ project_slug }}.conf
-  notify:
-    - restart nginx
-    
+
 - name: create symlink nginx config
   file: src=/etc/nginx/sites-available/{{ project_slug }}.conf dest=/etc/nginx/sites-enabled/{{ project_slug }}.conf state=link
+  notify:
+    - restart nginx
 
 # - name: Setup postgres cluster to default to utf8 | stop cluster
 #   # if the dbs haven't been created yet, we want to destroy the whole db

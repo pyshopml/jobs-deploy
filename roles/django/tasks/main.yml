@@ -5,26 +5,26 @@
     dest: "{{ backend_dir }}"
     version: master
 
-- name: create logs directory
-  file: path={{ project_dir }}/logs state=directory
-
-- name: crasdeate logs directory
+- name: crasdeate static directory
   file: path={{ backend_dir }}/jobs_backend/static state=directory
-
 
 - name: create virtualenv
   pip:
     virtualenv: "{{ backend_dir }}/venv"
     requirements: "{{ requirements }}"
+# - name: install ddt
+  # pip:
+  #   name: django-debug-toolbar
+  #   virtualenv: "{{ backend_dir }}/venv"
 
 - name: copy .env
   template: src=.env dest={{ backend_dir }}/config/settings/.env
 
 - name: migrate database
-  django_manage: command=migrate virtualenv={{ env }} app_path={{ backend_dir }}
+  django_manage: command=migrate virtualenv={{ env }} app_path={{ backend_dir }} settings=config.settings.production
 
 - name: collectstatic
-  django_manage: command=collectstatic virtualenv={{ env }} app_path={{ backend_dir }}
+  django_manage: command=collectstatic virtualenv={{ env }} app_path={{ backend_dir }} settings=config.settings.production
 
 # - name: create media directory
 #   file: path={{ project_dir }}/media state=directory
