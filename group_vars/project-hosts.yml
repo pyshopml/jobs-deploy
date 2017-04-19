@@ -1,58 +1,30 @@
-#
-# system options
-#
 # locale for postgresql
 locale: en_US.UTF-8
 # linux username
 username: pyjobs
 
-# about password crypt
-# http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
-# or run `mkpasswd --method=SHA-512`
-# here crypted
-user_crypt_password:
-# really password
-user_password: z
-
 user_homedir: "/home/{{ username }}"
-
-postgresql_root_user: root   # root postgresql user
-postgresql_root_password: ""
-
 #
 # project options
 #
 # project slug ( if u have `example/manage.py` and example/example/settings.py` - `example` is project_slug)
 project_slug: pyjobs
 backend_slug: jobs-backend
-
 # url or list urls for nginx
 project_url: jobs.pyshop.ru
 
 project_dir: "{{ user_homedir }}/{{ project_slug }}"
 
 backend_dir: "{{ project_dir }}/{{ backend_slug }}"
-frontend_slug: jobs-team-frontend
+frontend_slug: jobs-frontend
 frontend_dir: "{{ project_dir }}/{{ frontend_slug }}"
 # virtualenv name
 env: "{{ backend_dir }}/venv"
 
-
+# postgresql settings
 pg_version: 9.5
 pg_encoding: 'UTF-8'
 pg_locale: 'en_US.UTF-8'
-pg_cluster: main
-# postgresql database for current project
-postgresql_database: jobs-backend
-
-# postgresql user for current project
-postgresql_user: pyjobs
-
-# postgresql user password for current project
-postgresql_user_password:
-#
-# django settings
-#
 
 # set empty string if not used
 requirements: '{{ backend_dir }}/requirements/production.txt'
