@@ -2,7 +2,7 @@
 - hosts: production
   become: true
   vars_files:
-    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/project-hosts.yml
-    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/vars_vault.yml
+    - group_vars/project-hosts.yml
+    - group_vars/vars_vault.yml
   roles:
     - system

@@ -1,8 +1,8 @@
 ---
 - hosts: production
   vars_files:
-    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/project-hosts.yml
-    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/vars_vault.yml
+    - group_vars/project-hosts.yml
+    - group_vars/vars_vault.yml
   become: true
   become_user: "{{ username }}"
   roles:
@@ -12,8 +12,8 @@
 - hosts: production
   become: true
   vars_files:
-    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/project-hosts.yml
-    - /home/flyik/projects/pyjobs/ansible-django-deploy/group_vars/vars_vault.yml
+    - group_vars/project-hosts.yml
+    - group_vars/vars_vault.yml
   tasks:
     - name: restart site in supervisor
       supervisorctl: name={{ project_slug }}-gunicorn state=restarted
