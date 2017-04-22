@@ -35,7 +35,7 @@ Then run:
 
     vagrant up
 
-It will be ask you for Vault password. You can find it in Discord
+It will asking you for Vault password. You can find it in Discord
 
 ### Check results
 
