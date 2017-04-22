@@ -1,0 +1,32 @@
+---
+
+- name: update the system
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: install nginx
+  apt: pkg={{ item.name }} state=present
+  with_items:
+    - name: nginx
+    - name: supervisor
+
+- name: copy supervisor config
+  template: src=supervisor/{{ project_slug }}.j2 dest=/etc/supervisor/conf.d/{{ project_slug }}.conf
+  notify:
+    - restart supervisor
+
+- name: delete default nginx config
+  file: path=/etc/nginx/sites-available/default state=absent
+- file: path=/etc/nginx/sites-enabled/default state=absent
+
+- name: create logs directory
+  become: true
+  become_user: "{{ username }}"
+  file: path={{ project_dir }}/logs state=directory
+
+- name: copy nginx config
+  template: src=nginx/{{ project_slug }}.j2 dest=/etc/nginx/sites-available/{{ project_slug }}.conf
+
+- name: create symlink nginx config
+  file: src=/etc/nginx/sites-available/{{ project_slug }}.conf dest=/etc/nginx/sites-enabled/{{ project_slug }}.conf state=link
+  notify:
+    - restart nginx

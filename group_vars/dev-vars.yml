@@ -1,0 +1,31 @@
+# locale for postgresql
+locale: en_US.UTF-8
+# linux username
+username: pyjobs
+
+user_homedir: "/home/{{ username }}"
+#
+# project options
+#
+# project slug ( if u have `example/manage.py` and example/example/settings.py` - `example` is project_slug)
+project_slug: pyjobs
+backend_slug: jobs-backend
+# url or list urls for nginx
+project_url: jobs.pyshop.ru
+
+project_dir: "{{ user_homedir }}/{{ project_slug }}"
+backend_dir: "{{ project_dir }}/{{ backend_slug }}"
+# virtualenv name
+env: "{{ backend_dir }}/venv"
+
+# postgresql settings
+pg_version: 9.5
+pg_encoding: 'UTF-8'
+pg_locale: 'en_US.UTF-8'
+
+# Для pip
+requirements: '{{ backend_dir }}/requirements/local.txt'
+# Конфиг джанги
+settings: config.settings.local
+# Ветка гита
+git_branch: develop

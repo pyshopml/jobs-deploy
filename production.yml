@@ -1,8 +1,18 @@
 ---
+
 - hosts: production
   vars_files:
-    - group_vars/project-hosts.yml
-    - group_vars/vars_vault.yml
+    - group_vars/prod-vars.yml
+    - group_vars/vars-vault.yml
+  become: true
+  roles:
+    - system
+    - webserver
+
+- hosts: production
+  vars_files:
+    - group_vars/prod-vars.yml
+    - group_vars/vars-vault.yml
   become: true
   become_user: "{{ username }}"
   roles:
@@ -12,8 +22,8 @@
 - hosts: production
   become: true
   vars_files:
-    - group_vars/project-hosts.yml
-    - group_vars/vars_vault.yml
+    - group_vars/prod-vars.yml
+    - group_vars/vars-vault.yml
   tasks:
     - name: restart site in supervisor
       supervisorctl: name={{ project_slug }}-gunicorn state=restarted

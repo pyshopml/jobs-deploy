@@ -3,7 +3,7 @@
   git:
     repo: 'https://github.com/pyshopml/jobs-backend.git'
     dest: "{{ backend_dir }}"
-    version: master
+    version: "{{ git_branch }}"
 
 - name: create static directory
   file: path={{ backend_dir }}/jobs_backend/static state=directory
@@ -17,7 +17,24 @@
   template: src=.env.j2 dest={{ backend_dir }}/config/settings/.env
 
 - name: migrate database
-  django_manage: command=migrate virtualenv={{ env }} app_path={{ backend_dir }} settings=config.settings.production
+  django_manage: command=migrate virtualenv={{ env }} app_path={{ backend_dir }} settings={{ settings }}
 
 - name: collectstatic
-  django_manage: command=collectstatic virtualenv={{ env }} app_path={{ backend_dir }} settings=config.settings.production
+  django_manage: command=collectstatic virtualenv={{ env }} app_path={{ backend_dir }} settings={{ settings }}
+- name: get static dirs names
+  shell: 'ls -l | grep ^d | cut -d " " -f 9'
+  args:
+    chdir: "{{ backend_dir }}/staticfiles"
+  register: sdirs
+
+- name: create static dir
+  file:
+    path: "{{ backend_dir }}/staticfiles/static"
+    state: directory
+
+- name: make links
+  command: "ln -sr ./{{ item }} static/{{ item }}"
+  args:
+    chdir: "{{ backend_dir }}/staticfiles"
+  with_items: "{{ sdirs.stdout_lines }}"
+  when: "item != 'static'"

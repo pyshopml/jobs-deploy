@@ -11,8 +11,6 @@
   with_items:
     - name: python3-pip
     - name: python3-dev
-    - name: supervisor
-    - name: nginx
     - name: postgresql-{{ pg_version }}
     - name: postgresql-contrib
     - name: npm
@@ -20,7 +18,6 @@
     - name: libpq-dev
     - name: python-psycopg2
     - name: language-pack-ru-base
-    # - name: nodejs
     - name: build-essential
     - name: nodejs-legacy
 
@@ -39,45 +36,6 @@
   file:
     path: "{{ user_homedir }}"
     owner: "{{ username }}"
-
-- name: copy supervisor config
-  template: src=supervisor/{{ project_slug }}.j2 dest=/etc/supervisor/conf.d/{{ project_slug }}.conf
-  notify:
-    - restart supervisor
-
-- name: delete default nginx config
-  file: path=/etc/nginx/sites-available/default state=absent
-
-- file: path=/etc/nginx/sites-enabled/default state=absent
-
-- name: create logs directory
-  become: true
-  become_user: "{{ username }}"
-  file: path={{ project_dir }}/logs state=directory
-
-- name: copy nginx config
-  template: src=nginx/{{ project_slug }}.j2 dest=/etc/nginx/sites-available/{{ project_slug }}.conf
-
-- name: create symlink nginx config
-  file: src=/etc/nginx/sites-available/{{ project_slug }}.conf dest=/etc/nginx/sites-enabled/{{ project_slug }}.conf state=link
-  notify:
-    - restart nginx
-
-# - name: Setup postgres cluster to default to utf8 | stop cluster
-#   # if the dbs haven't been created yet, we want to destroy the whole db
-#   # cluster and recreate it with proper utf8 support.
-#   shell: pg_dropcluster --stop {{ pg_version }} {{ pg_cluster }}
-#   tags:
-#     - postgres
-
-# - name: Setup postgres cluster to default to utf8 | start cluster
-#   # if the dbs haven't been created yet, we want to destroy the whole db
-#   # cluster and recreate it with proper utf8 support. From http://ph.ly/pg
-#   # become: yes
-#   # become_user: postgres
-#   shell: pg_createcluster --start -e {{ pg_encoding }} {{ pg_version }} {{ pg_cluster }}
-#   tags:
-#     - postgres
 
 - name: Create Postgresql database
   become: yes
@@ -102,5 +60,3 @@
     state=present
   notify:
     - restart postgresql
-
-# create database

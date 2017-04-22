@@ -1,4 +1,0 @@
----
-- name: restart django
-  supervisorctl: name={{ project_url }} state=restarted
-  become: true

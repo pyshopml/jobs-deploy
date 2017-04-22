@@ -28,3 +28,7 @@ pg_locale: 'en_US.UTF-8'
 
 # set empty string if not used
 requirements: '{{ backend_dir }}/requirements/production.txt'
+# Конфиг джанги
+settings: config.settings.production
+# Ветка гита
+git_branch: master

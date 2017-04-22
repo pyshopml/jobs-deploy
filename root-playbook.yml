@@ -1,8 +1,0 @@
----
-- hosts: production
-  become: true
-  vars_files:
-    - group_vars/project-hosts.yml
-    - group_vars/vars_vault.yml
-  roles:
-    - system

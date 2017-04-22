@@ -1,13 +1,14 @@
 ---
 
-- name: restart supervisor
-  service: name=supervisor state=restarted
-
-- name: start site
-  supervisorctl: name={{ project_slug }}-gunicorn state=started
-
 - name: restart postgresql
   service: name=postgresql state=restarted enabled=yes
 
-- name: restart nginx
-  service: name=nginx state=restarted enabled=yes
+# - name: restart supervisor
+#   service: name=supervisor state=restarted
+#
+# - name: start site
+#   supervisorctl: name={{ project_slug }}-gunicorn state=started
+
+
+# - name: restart nginx
+#   service: name=nginx state=restarted enabled=yes

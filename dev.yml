@@ -1,0 +1,27 @@
+---
+
+- hosts: all
+  vars_files:
+    - group_vars/dev-vars.yml
+    - group_vars/vars-vault-dev.yml
+  become: true
+  roles:
+    - system
+
+- hosts: all
+  vars_files:
+    - group_vars/dev-vars.yml
+    - group_vars/vars-vault-dev.yml
+  become: true
+  become_user: "{{ username }}"
+  roles:
+    - django
+
+- hosts: all
+  become: true
+  vars_files:
+    - group_vars/dev-vars.yml
+    - group_vars/vars-vault-dev.yml
+  tasks:
+    - name: restart postgresql
+      service: name=postgresql state=restarted enabled=yes
